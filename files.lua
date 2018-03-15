@@ -2,6 +2,7 @@
 -- (c)copyright 2018 by Gerald Wodni <gerald.wodni@gmail.com>
 
 local Mimetypes = {
+    txt = "text/plain",
     lua = "text/plain"
 }
 
@@ -56,7 +57,6 @@ local function serveFile( req, res, filename, download )
 end
 
 Router["/files"] = function( req, res )
-    print("calling ls")
     res:status("200 OK")
     res:header("Content-Type", "text/html")
     res:send("<h1>ls</h1>")
@@ -73,7 +73,6 @@ Router["/files"] = function( req, res )
             .. "</tr>" )
     end
     res:send("</tbody></table>");
-    print("ls done!")
 end
 
 Router["^/files/show"] = function( req, res )
@@ -100,6 +99,16 @@ end
 
 Router["^/files/save"] = function( req, res )
     local filename = unescape( req.path:sub( 13 ) )
-    res:sendStatus( "200 OK", req.requestData )
+    local f = file.open( filename, "w" )
+    if f then
+        if not f:write( req.requestData ) then
+            res:sendStatus( "500 Internal Error", "Error writing file" )
+        else
+            res:sendStatus( "200 OK", req.requestData )
+        end
+        f:close()
+    else
+        res:sendStatus( "500 Internal Error", "Error opening file for write" )
+    end
 end
 
