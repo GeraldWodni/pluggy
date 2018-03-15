@@ -21,7 +21,7 @@ local function unescape( input )
     return text
 end
 
-local function serveFile( req, res, filename )
+local function serveFile( req, res, filename, download )
     local pos = filename:find(".[^.]*$")
     local extension = ""
     if pos then
@@ -39,6 +39,9 @@ local function serveFile( req, res, filename )
         res:header("Content-Type", mime)
         res:header("Connection", "close")
         res:header("Content-Length", tostring( f:seek("end") ))
+        if download then
+            res:header("Content-Disposition", 'attachment;filename="' .. filename .. '"')
+        end
         f:seek("set")
         repeat
             local chunk = f:read()
@@ -64,6 +67,7 @@ Router["/files"] = function( req, res )
     for name, size in pairs( file.list() ) do
         res:send( "<tr><td>" .. name .. "</td><td>" .. size .. "</td>"
             .. "<td><a href=\"/files/show/" .. name .. "\">Show</a></td>"
+            .. "<td><a href=\"/files/download/" .. name .. "\">Download</a></td>"
             .. "<td><a href=\"/files/edit/" .. name .. "\">Edit</a></td>"
             .. "<td><a href=\"/files/delete/" .. name .. "\">Delete</a></td>"
             .. "</tr>" )
@@ -75,6 +79,11 @@ end
 Router["^/files/show"] = function( req, res )
     local filename = unescape( req.path:sub( 13 ) )
     serveFile( req, res, filename )
+end
+
+Router["^/files/download"] = function( req, res )
+    local filename = unescape( req.path:sub( 17 ) )
+    serveFile( req, res, filename, true )
 end
 
 Router["^/files/delete"] = function( req, res )

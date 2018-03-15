@@ -2,15 +2,14 @@
 -- (c)copyright 2018 by Gerald Wodni <gerald.wodni@gmail.com>
 
 local Response = {}
+Response.__index = Response
 
-function Response:new( obj, connection )
-  obj = obj or {}
-  setmetatable(obj,self)
-  self.__index = self
+function Response.new( connection )
+  local self = setmetatable( {}, Response )
   self.connection = connection
   self.headersSent = false
   self.sendQueue = {}
-  return obj
+  return self
 end
 
 function Response:queue( data )

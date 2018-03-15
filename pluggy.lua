@@ -1,5 +1,6 @@
 -- Pluggy main file
 -- (c)copyright 2018 by Gerald Wodni <gerald.wodni@gmail.com>
+local Request  = require "request"
 local Response = require "response"
 
 -- web server
@@ -7,47 +8,34 @@ function webserver(port, router)
     local server = net.createServer(net.TCP, 10000)
     server:listen(port, function( connection )
         -- accumulate header  
-        local requestData = ""
-        connection:on("receive", function(conn, chunk)
-            requestData = requestData .. chunk
-            -- full header received?
-
-            -- todo check for content length and make sure it is included
-            -- special request-class?
-            if requestData:find("\r\n\r\n") or requestData:find("\n\n") then
-                req = { requestData = requestData }
-                local pos
-                pos = requestData:find(" ")
-                req.method = requestData:sub(1, pos-1 )
-                pos = requestData:find(" ", req.method:len()+2)
-                req.path = requestData:sub( req.method:len()+2, pos-1 )
-
-                -- find matching response handler
-                local res = Response:new( nil, connection );
-                if router[req.path] ~= nil then
-                    router[req.path]( req, res )
-                else
-                    -- no direct match, check for prefix handler
-                    local found = false
-                    for path, handler in pairs(router) do
-                        if path:sub(1,1) == "^" and #req.path >= #path-1 and path:find( req.path:sub( 1, #path-1 ), 2, true ) == 2 then
-                            handler( req, res )
-                            found = true
-                            break
-                        end
-                    end
-
-                    -- handle 404
-                    if not found then
-                        if router["404"] ~= nil then
-                            router["404"]( req, res )
-                        else
-                            res:sendStatus("404 Not Found", "Resource not found")
-                        end
+        local req = Request.new( connection, function( req )
+            -- find matching response handler
+            local res = Response.new( connection );
+            if router[req.path] ~= nil then
+                router[req.path]( req, res )
+            else
+                -- no direct match, check for prefix handler
+                local found = false
+                for path, handler in pairs(router) do
+                    if path:sub(1,1) == "^" and #req.path >= #path-1 and path:find( req.path:sub( 1, #path-1 ), 2, true ) == 2 then
+                        handler( req, res )
+                        found = true
+                        break
                     end
                 end
-                res:close()
+
+                -- handle 404
+                if not found then
+                    if router["404"] ~= nil then
+                        router["404"]( req, res )
+                    else
+                        res:sendStatus("404 Not Found", "Resource not found")
+                    end
+                end
             end
+            res:close()
+            req = nil
+            res = nil
         end)
     end)
 end
@@ -57,7 +45,7 @@ Router = {}
 
 -- run this on startup
 function connect()
-    -- zeroconf dns (propagate host as <name>.local in lan)
+    -- debug echo
     Router["/debug"] = function( req, res )
         res:status( "200 OK" )
         res:header( "Content-Type", "text/html" )
@@ -71,6 +59,7 @@ function connect()
         )
         print( "All sent!" )
     end
+    -- debug routes
     Router["/routes"] = function( req, res )
         res:status( "200 OK" )
         res:header( "Content-Type", "text/html" )
@@ -81,6 +70,7 @@ function connect()
         res:send("</ul>")
     end
     
+    -- zeroconf dns (propagate host as <name>.local in lan)
     mdns.register("pluggy")
     webserver(80, Router)
 end
