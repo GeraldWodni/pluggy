@@ -49,14 +49,12 @@ function connect()
     Router["/debug"] = function( req, res )
         res:status( "200 OK" )
         res:header( "Content-Type", "text/html" )
-        res:send(
-               "<table><thead><tr><th>Field</th><th>Value</th></tr></thead>"
-            .. "<tbody>"
-            .. "<tr><td>method</td><td>" .. req.method .. "</td></tr>"
-            .. "<tr><td>path</td><td>" .. req.path .. "</td></tr>"
-            .. "</tbody></table>"
-            .. "<pre>" .. req.requestData .. "</pre>"
-        )
+        res:send("<h1>debug</h1><h2>" .. req.method .. " &gt;" .. req.path .. "&lt;</h2>")
+        res:send( "<table><thead><tr><th>Field</th><th>Value</th></tr></thead><tbody>" )
+        for name, value in pairs(req.headers) do
+            res:send( "<tr><td>" .. name .. "</td><td>" .. value .. "</td></tr>" )
+        end
+        res:send( "</tbody></table>" .. "<h3>ContentData:</h3><pre>" .. req.requestData .. "</pre>")
         print( "All sent!" )
     end
     -- debug routes

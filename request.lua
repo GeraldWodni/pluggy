@@ -26,6 +26,18 @@ function Request:onReceive( chunk )
     end
 end
 
+function Request:parseHeader(header)
+    local colonPos = header:find(":")
+    if colonPos then
+        local name = header:sub(1, colonPos-1)
+        local value = header:sub(colonPos+1)
+        if value:sub(1,1) == " " then
+            value = value:sub(2)
+        end
+        self.headers[ name ] = value
+    end
+end
+
 function Request:parseHeaders()
     local pos
     pos = self.requestData:find(" ")
@@ -36,9 +48,25 @@ function Request:parseHeaders()
     local headersEnd = self.requestData:find("\r\n\r\n")
     local contentStart = headersEnd + 4
     if not headersEnd then
-        headerEnd = self.requestData:find("\n\n")
+        headersEnd = self.requestData:find("\n\n")
         contentStart = headersEnd + 2
     end
+
+    -- parse headers line by line
+    local headers = self.requestData:sub(1, headersEnd):gsub("\r\n", "\n")
+    repeat
+        pos = headers:find("\n")
+        if pos then
+            self:parseHeader( headers:sub(1, pos-1) )
+            headers = headers:sub( pos+1 )
+        else
+            self:parseHeader( headers )
+            headers = nil
+        end
+    until headers == nil
+
+    -- content Data after headers
+    self.requestData = self.requestData:sub(contentStart)
 
     self.callback( self )
 end
