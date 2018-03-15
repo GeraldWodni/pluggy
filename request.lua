@@ -24,15 +24,22 @@ function Request:onReceive( chunk )
     if self.requestData:find("\r\n\r\n") or self.requestData:find("\n\n") then
         self:parseHeaders()
     end
+    if self.contentLength and #self.requestData == self.contentLength then
+        self.callback( self )
+    end
 end
 
 function Request:parseHeader(header)
     local colonPos = header:find(":")
     if colonPos then
-        local name = header:sub(1, colonPos-1)
+        local name = header:sub(1, colonPos-1):lower()
         local value = header:sub(colonPos+1)
         if value:sub(1,1) == " " then
             value = value:sub(2)
+        end
+        -- check for Content-Length
+        if name == "content-length" then
+            self.contentLength = tonumber( value )
         end
         self.headers[ name ] = value
     end
@@ -68,7 +75,9 @@ function Request:parseHeaders()
     -- content Data after headers
     self.requestData = self.requestData:sub(contentStart)
 
-    self.callback( self )
+    if not self.contentLength or #self.requestData == self.contentLength then
+        self.callback( self )
+    end
 end
 
 return Request
