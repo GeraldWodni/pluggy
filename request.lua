@@ -80,7 +80,7 @@ function Request:parseHeaders()
     end
 end
 
-function Request:free()
+function Request:cleanup()
     self.connection = nil
     self.headers = nil
     self.requestData = nil

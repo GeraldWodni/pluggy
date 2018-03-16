@@ -10,7 +10,7 @@ function webserver(port, router)
         -- accumulate header  
         local req = Request.new( connection, function( req )
             -- find matching response handler
-            local res = Response.new( connection );
+            local res = Response.new( req.connection )
             if router[req.path] ~= nil then
                 router[req.path]( req, res )
             else
@@ -33,11 +33,10 @@ function webserver(port, router)
                     end
                 end
             end
-            req:free()
+            req:cleanup()
             req = nil
             res:close()
             res = nil
-            collectgarbage()
         end)
     end)
 end

@@ -44,7 +44,11 @@ function Response:close( data )
         else
             -- close connection once finished
             self.connection:close()
+
+            -- free remaining references and start gc
+            self.connection = nil
             self.sendQueue = nil
+            collectgarbage()
         end
     end
 
