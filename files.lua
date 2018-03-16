@@ -54,6 +54,7 @@ local function serveFile( req, res, filename, download )
             end
         until chunk == nil
         f:close()
+        f = nil
     else
         res:sendStatus("404 Not Found", "File not found")
     end
@@ -110,6 +111,7 @@ Router["^/files/save"] = function( req, res )
             res:sendStatus( "200 OK", req.requestData )
         end
         f:close()
+        f = nil
     else
         res:sendStatus( "500 Internal Error", "Error opening file for write" )
     end
