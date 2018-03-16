@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Pluggy</title>
+</head>
+<body>
+    <h1>Pluggy</h1>
+    <input type="text" id="filename"/>
+    <textarea id="editor"></textarea>
+    <button id="save">Save</button>
+    <script>
+        function $id(id) { return document.getElementById(id); }
+        $id("save").addEventListener("click", function() {
+            var filename = $id("filename").value;
+            var content = $id("editor").value;
+            fetch( "/files/save/" + filename, {
+                method: "POST",
+                body: content
+            })
+            .then(() => alert("File saved"))
+            .catch(() => alert("Error saving file"))
+        });
+    </script>
+</body>
+</html>

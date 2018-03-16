@@ -33,9 +33,11 @@ function webserver(port, router)
                     end
                 end
             end
-            res:close()
+            req:free()
             req = nil
+            res:close()
             res = nil
+            collectgarbage()
         end)
     end)
 end
@@ -55,6 +57,7 @@ function connect()
             res:send( "<tr><td>" .. name .. "</td><td>" .. value .. "</td></tr>" )
         end
         res:send( "</tbody></table>" .. "<h3>ContentData:</h3><pre>" .. req.requestData .. "</pre>")
+        res:send( "<h3>Free RAM:" .. node.heap() .. "</h3>" )
         print( "All sent!" )
     end
     -- debug routes

@@ -2,8 +2,11 @@
 -- (c)copyright 2018 by Gerald Wodni <gerald.wodni@gmail.com>
 
 local Mimetypes = {
-    txt = "text/plain",
-    lua = "text/plain"
+    css = "text/css",
+    html= "text/html",
+    js  = "text/javascript",
+    lua = "text/plain",
+    txt = "text/plain"
 }
 
 local function unescape( input )
@@ -59,10 +62,10 @@ end
 Router["/files"] = function( req, res )
     res:status("200 OK")
     res:header("Content-Type", "text/html")
-    res:send("<h1>ls</h1>")
+    res:send("<h1>files</h1>")
     local remaining, used, total
     remaining, used, total = file.fsinfo()
-    res:send("<p>Total: " .. total .. "kb<br/>Used: " .. used .. "kb<br/>Free: " .. remaining .. "kb</p>")
+    res:send("<p>Total: " .. total .. "<br/>Used: " .. used .. "<br/>Free: " .. remaining .. "</p>")
     res:send("<table><thead><tr><th>Name</th><th>Size</th><th>Action</th></tr></thead><tbody>")
     for name, size in pairs( file.list() ) do
         res:send( "<tr><td>" .. name .. "</td><td>" .. size .. "</td>"
@@ -110,5 +113,14 @@ Router["^/files/save"] = function( req, res )
     else
         res:sendStatus( "500 Internal Error", "Error opening file for write" )
     end
+end
+
+Router["^/files/run"] = function( req, res )
+    local filename = unescape( req.path:sub( 12 ) )
+    dofile( filename )
+end
+
+Router["/"] = function( req, res )
+    serveFile( req, res, "index.html" )
 end
 
