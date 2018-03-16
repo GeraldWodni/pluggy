@@ -39,6 +39,7 @@ function Request:parseHeader(header)
         end
         -- check for Content-Length
         if name == "content-length" then
+            print("CONTENT-LENGTH:", value)
             self.contentLength = tonumber( value )
         end
         self.headers[ name ] = value
