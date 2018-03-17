@@ -1,0 +1,118 @@
+html, body {
+    height: 100%;
+    padding: 0;
+    margin: 0;
+
+    font-size: 16px;
+    font-family: sans-serif;
+}
+body > .wrapper {
+    /* height: 100%; */
+    padding: 25px 50px;
+}
+/* holder */
+.holder {
+    margin: 0 auto;
+
+    width: 50%;
+    min-width: 200px;
+    background-color: #FFF;
+
+    padding: 15px;
+
+    border-radius: 10px;
+}
+
+button {
+    font-size: 15px;
+
+    padding: 7px 15px;
+    font-weight: bold;
+    color: #FFF;
+    background-color: hsl( 240, 100%, 70% );
+
+    border: 1px solid hsl( 240, 100%, 90% );
+    border-radius: 5px;
+
+    cursor: pointer;
+}
+
+.form-group {
+    margin-top: 15px;
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    margin-top: 3px;
+    margin-bottom: 3px;
+}
+.form-group input {
+    display: block;
+    padding: 6px 5px;
+
+    width: 100%;
+    margin-top: 3px;
+    margin-bottom: 3px;
+
+    border: 1px solid #CCC;
+    border-radius: 3px;
+}
+
+h1 {
+    margin-top: 0;
+    margin-bottom: 5px;
+}
+
+
+
+/* svg */
+svg {
+    z-index: -1000;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #F00;
+}
+svg rect {
+    stroke: #FFF;
+    stroke-width: 1;
+}
+svg .tri {
+    stroke: #FFF;
+    stroke-width: 4;
+}
+svg circle {
+    stroke: #FFF;
+    stroke-width: 4;
+    fill: #F0F;
+}
+
+@keyframes blinky {
+    0%  {fill:  hsl(210, 100%, 50%);}
+    20% {fill:  hsl(300, 100%, 50%);}
+    50% {fill:  hsl(300, 100%, 50%);}
+    70% {fill:  hsl(210, 100%, 50%);}
+}
+
+@keyframes circleBlinky {
+    0%  {fill:  hsl(270, 100%, 50%);}
+    20% {fill:  hsl( 60, 100%, 50%);}
+    50% {fill:  hsl( 60, 100%, 50%);}
+    70% {fill:  hsl(270, 100%, 50%);}
+}
+
+svg .anim {
+    fill:  hsl(210, 100%, 50%);
+    animation-name: blinky;
+    animation-duration: 10s;
+    animation-direction: alternate;
+    animation-iteration-count: infinite;
+}
+
+svg circle.anim {
+    fill:  hsl(270, 100%, 50%);
+    animation-name: circleBlinky;
+}

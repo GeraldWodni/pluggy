@@ -48,7 +48,7 @@ This documentation is very terse, read the source to understand pluggy's full po
 
 ## Content
 
-Content is hold in the /content folder. Use dish.sh to create a dist folder with minified, gzippec content. Some nodejs-modules are required to do that: install with `sudo npm install -g uglify-js html-minifier`)
+Content is hold in the /content folder. Use dish.sh to create a dist folder with minified, gzippec content. Some nodejs-modules are required to do that: install with `sudo npm install -g uglify-js clean-css-cli html-minifier`)
 
 Then just run `./dish.sh` and upload the contents of `/dist` using the upload function of the editor:
 http://pluggy.local/files/show/editor.html
