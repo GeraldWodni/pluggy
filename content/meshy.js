@@ -54,5 +54,5 @@ window.addEventListener("load", function() {
             }
     }
 
-    if(Math.random() < 0.5) randomCircles(); else randomGrid(); }
+    if(Math.random() < 0.01) randomCircles(); else randomGrid(); }
 );
